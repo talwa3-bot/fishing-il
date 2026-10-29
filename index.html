@@ -23,6 +23,7 @@ input[type=date]{width:100%;min-height:48px;font-size:1em;border-radius:12px;bor
 <header><h1>🎣 דייג</h1><div>איפה ומתי לדוג עכשיו 🌊🐟</div><small>נתונים חיים בכל טעינה</small><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0 20 Q150 0 300 20 T600 20 T900 20 T1200 20 V40 H0Z" fill="#04324f"/></svg></header>
 <main>
 <div class="card prof"><span id="profTxt"></span><button onclick="openProf()">✏️ שינוי</button></div>
+<div class="card" id="actBar" style="display:flex;gap:8px;flex-wrap:wrap"><button id="instBtn" onclick="install()" style="flex:1 1 45%;background:linear-gradient(90deg,#4dabf7,#74c0fc)">📲 הורד לטלפון</button><button onclick="share()" style="flex:1 1 45%;background:#ffffff22;color:#fff">🔗 שתף חברים</button></div>
 <button class="go" onclick="goNow()">🎣 ללכת לדוג עכשיו?</button>
 <div id="goRes"></div>
 <div class="card"><button onclick="geo()">📍 מצא ספוט קרוב אליי</button>
@@ -119,5 +120,16 @@ function detail(s,keep){CUR=DATA.find(d=>d.s.i==s.i);if(!keep)DAY=0;const D=docu
  <div class="card"><div class="big">🕐 שעה-שעה ‹ החליקו</div><div class="hrs">${dayH.filter((_,i)=>i%2==0).map(x=>`<div class="hr">${fmt(x.t)}<b class="${cls(x.score)}">${x.score}</b>🌊${x.wave.toFixed(1)}<br>💨${Math.round(x.ws)}</div>`).join("")}</div></div>`;
  if(!keep)D.scrollIntoView({behavior:'smooth'})}
 function geo(){navigator.geolocation.getCurrentPosition(p=>detail(near(p.coords).s),()=>alert("אין גישה למיקום"))}
+let DP=null;const isSA=matchMedia('(display-mode: standalone)').matches||navigator.standalone,isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+if(isSA)document.getElementById('instBtn').style.display="none";
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();DP=e});addEventListener('appinstalled',()=>document.getElementById('instBtn').style.display="none");
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+function pop(t){document.getElementById('modal').innerHTML=`<div class="modal" onclick="if(event.target==this)this.remove()"><div class="card">${t}<button onclick="document.getElementById('modal').innerHTML=''" style="margin-top:12px">הבנתי 👍</button></div></div>`}
+async function install(){if(DP){DP.prompt();const r=await DP.userChoice;DP=null;if(r.outcome=="accepted")document.getElementById('instBtn').style.display="none";return}
+ if(isIOS)return pop(`<div class="big">📲 התקנה באייפון</div>1. פתחו את האתר ב-<b>Safari</b><br>2. לחצו על כפתור השיתוף ⬆️ בתחתית<br>3. גללו ובחרו <b>"הוסף למסך הבית"</b> ➕<br>4. לחצו <b>"הוסף"</b> – וזהו! 🎣`);
+ pop(`<div class="big">📲 התקנה לטלפון</div>בכרום: לחצו על תפריט ⋮ למעלה ← <b>"התקנת אפליקציה"</b> / <b>"הוספה למסך הבית"</b>.`)}
+async function share(){const d={title:"דייג – איפה ומתי לדוג",text:"🎣 בדקו איפה הכי כדאי לדוג עכשיו בישראל – גלים, רוח ומזג אוויר בזמן אמת",url:"https://talwa3-bot.github.io/fishing-il/"};
+ if(navigator.share)try{await navigator.share(d);return}catch(e){return}
+ try{await navigator.clipboard.writeText(d.url);pop("✅ הקישור הועתק! שלחו לחברים 🎣")}catch(e){pop("שתפו את הקישור:<br>"+d.url)}}
 profTxt();if(!P)openProf();loadAll().then(rank).catch(e=>document.getElementById('rank').innerHTML="שגיאה בטעינת נתונים – נסו לרענן");
 </script></body></html>
