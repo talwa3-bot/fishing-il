@@ -32,7 +32,7 @@ const SPOTS=[
 ].map(([n,la,lo,t],i)=>({n,la,lo,t,i}));
 const sel=document.getElementById('sel');SPOTS.forEach(s=>sel.add(new Option(s.n,s.i)));
 const C="https://commons.wikimedia.org/wiki/Special:FilePath/";
-const FISH={"לברק":"Sealife,_Bray,_Ireland._(6985874908).jpg","דניס":"Sparus_aurata,_Alpes-Maritimes,_Provence-Alpes-Côte_d'Azur,_FR_imported_from_iNaturalist_photo_207799710.jpg","סרגוס":"Sargo_común_(Diplodus_sargus),_Madeira,_Portugal,_2019-05-31,_DD_29.jpg","מוסר ים":"Mormora.jpg","בורי":"Mugil_cephalus_Minorca.jpg","לוקוס":"Mero_(Epinephelus_marginatus),_Cabo_de_Palos,_España,_2022-07-15,_DD_34.jpg","גראפה":"Pomatomus_saltatrix.png","אמנון":"Blue_Tilapia_(cropped).jpg","שפמנון":"Clarias_gariepinus.jpg","קרנגיים":"Jurel_de_aleta_azul_(Caranx_melampygus),_Yeda,_Arabia_Saudita,_2025-05-23,_DD_22.jpg","מוליות":"Mulloidichthys_vanicolensis,_Jemeluk_Wall,_Amed,_Bali,_Indonesia_imported_from_iNaturalist_photo_429994681.jpg","פרידה":"Pargo_de_rayas_azules_(Lutjanus_kasmira),_Mauricio,_2025-09-23,_DD_37.jpg"};
+const FISH={"לברק":"Sealife,_Bray,_Ireland._(6985874908).jpg","דניס":"Sparus_aurata,_Alpes-Maritimes,_Provence-Alpes-Côte_d'Azur,_FR_imported_from_iNaturalist_photo_207799710.jpg","סרגוס":"Sargo_común_(Diplodus_sargus),_Madeira,_Portugal,_2019-05-31,_DD_29.jpg","מוסר ים":"Mormora.jpg","בורי":"Mugil_cephalus_Minorca.jpg","לוקוס":"Mero_(Epinephelus_marginatus),_Cabo_de_Palos,_España,_2022-07-15,_DD_34.jpg","גראפה":"Pomatomus_saltatrix.png","אמנון":"Blue_Tilapia_(cropped).jpg","שפמנון":"Clarias_gariepinus.jpg","קרנגיים":"Jurel_de_aleta_azul_(Caranx_melampygus),_Yeda,_Arabia_Saudita,_2025-05-23,_DD_22.jpg","מוליות":"Mulloidichthys_vanicolensis,_Jemeluk_Wall,_Amed,_Bali,_Indonesia_imported_from_iNaturalist_photo_429994681.jpg","בלמידה":"Lichia_amia.jpg","ברקודה":"Sphyraena_viridensis_678403639.jpg","ברקודה גדולה":"Gran_barracuda_(Sphyraena_barracuda),_Yeda,_Arabia_Saudita,_2025-05-20,_DD_118.jpg","קרפיון":"Cyprinus_carpio_2008_G1_(cropped).jpg","פרידה":"Pargo_de_rayas_azules_(Lutjanus_kasmira),_Mauricio,_2025-09-23,_DD_37.jpg"};
 const fishImg=n=>`<figure><img loading="lazy" alt="${n}" src="${C+encodeURIComponent(FISH[n])}?width=300"><figcaption>${n}</figcaption></figure>`;
 const DIR=d=>["צ","צ-מז","מז","ד-מז","ד","ד-מע","מע","צ-מע"][Math.round(d/45)%8];
 async function get(s){
@@ -54,12 +54,15 @@ function score(h,sun,H){let sc=100;const wv=h.wave??0.5;
 const cls=v=>v>=70?"g":v>=45?"y":"r",word=v=>v>=70?"מעולה – לך לדוג!":v>=45?"אפשרי בזהירות":"לא מומלץ";
 function nowIdx(H){const n=Date.now();let b=0;H.forEach((h,k)=>{if(new Date(h.t).getTime()<=n)b=k});return b}
 function levels(h){const wv=h.wave??0,w=h.ws;return[["מתחיל",wv<0.9&&w<18],["בינוני",wv<1.6&&w<28],["מקצוען",wv<2.4&&w<38]]}
-function gear(s,h){const wv=h.wave??0;
- if(s.t=="lake")return["חכת ספינינג קלה 2.1–2.7 מ' או חכת פלוט","תולעים, בצק, לחם; פיתיונות סיליקון קטנים לבס",["אמנון","בורי","שפמנון"]];
- if(s.t=="red")return["ספינינג קל/LRF 2.1–2.4 מ', ג'יגינג מהחוף","שרימפס, קלמרי, ג'יג קטן 10–30 גרם",["קרנגיים","פרידה","מוליות"],"⚠️ אסור לדוג בשמורת האלמוגים"];
- if(s.t=="pier")return wv>1?["חכת קאסטינג/סרף כבדה 3.6–4.2 מ', משקולת 100–150 גרם","קלמרי, סרדין, שרימפס",["מוסר ים","גראפה","לברק"]]:["ספינינג בינוני 2.7–3 מ' או LRF ליד הסלעים","שרימפס, תולעת ים, ספינרים וג'יגים 20–40 גרם",["דניס","סרגוס","לברק"]];
- if(s.t=="rock")return["ספינינג 2.7–3.3 מ' (חוט קלוע)","סרטנים, שרימפס, ג'יגים ופופרים",["סרגוס","לוקוס","דניס"]];
- return wv>0.6?["חכת סרפקאסטינג 4–4.5 מ', משקולת 120–175 גרם","תולעת ים, סרדין, קלמרי",["מוסר ים","לברק","גראפה"]]:["סרפקאסטינג קל 3.6–3.9 מ' או ספינינג","תולעת ים, שרימפס, צדפות",["מוסר ים","סרגוס","בורי"]]}
+function gear(s,h){const wv=h.wave??0,O=(r,b,f)=>({r,b,f});
+ if(s.t=="lake")return{o:[O("🪝 חכה פשוטה / פלוט 2.1–3 מ'","בצק, לחם, תולעים",["אמנון","קרפיון","בורי"]),O("🎯 ספינינג קל עם פיתיונות","סיליקון קטן, ספינר",["לברק","אמנון"]),O("🌙 תחתית כבדה (ערב/לילה)","כבד עוף, דג פיתיון",["שפמנון","קרפיון"])]};
+ if(s.t=="red")return{o:[O("🎯 ספינינג/LRF 2.1–2.4 מ'","ג'יג קטן 10–30 גרם, פופר",["ברקודה גדולה","קרנגיים"]),O("🪝 חכה פשוטה קלה","שרימפס, קלמרי",["פרידה","מוליות"])],n:"⚠️ אסור לדוג בשמורת האלמוגים ובשמורות טבע"};
+ const spin=O("🎯 ספינינג עם פיתיונות 2.7–3.3 מ'","ג'יגים 20–40 גרם, וובלרים, פופרים",["לוקוס","בלמידה","ברקודה"]),
+  surf=O(wv>0.6?"🏖️ סרפקאסטינג 4–4.5 מ', משקולת 120–175 גרם":"🏖️ סרפקאסטינג קל 3.6–3.9 מ'","תולעת ים, סרדין, קלמרי",["מוסר ים","דניס","בורי"]),
+  simple=O("🪝 חכה פשוטה / LRF ליד סלעים","שרימפס, בצק, תולעת ים",["סרגוס","דניס","בורי"]);
+ if(s.t=="pier")return{o:wv>1.2?[surf,spin]:[spin,simple,surf]};
+ if(s.t=="rock")return{o:[spin,simple]};
+ return{o:wv>0.4?[surf,spin]:[simple,surf,spin]}}
 const fmt=t=>t.slice(11,16),day=t=>new Date(t).toLocaleDateString('he-IL',{weekday:'short'});
 async function rankAll(){const R=await Promise.all(SPOTS.map(s=>get(s).catch(()=>null)));
  const ok=R.filter(Boolean).map(r=>{const k=nowIdx(r.H),next=r.H.slice(k,k+6);return{...r,k,now:Math.round(next.reduce((a,h)=>a+h.score,0)/next.length)}}).sort((a,b)=>b.now-a.now);
@@ -70,8 +73,7 @@ async function detail(s){const D=document.getElementById('det');D.innerHTML='<di
  <div class="stats"><div>🌊 גלים<br><b>${h.wave!=null?h.wave.toFixed(1)+" מ'":"-"}</b></div><div>💨 רוח<br><b>${Math.round(h.ws)} קמ"ש</b><br><small>משבים ${Math.round(h.wg)} · מ${DIR(h.wd)}</small></div><div>🌡️ אוויר<br><b>${Math.round(h.temp)}°</b></div><div>💧 מים<br><b>${h.sst?h.sst.toFixed(0)+"°":"-"}</b></div><div>🌧️ גשם<br><b>${h.rain??0}%</b></div><div>🌅/🌇<br><b>${fmt(sun[0][0])} · ${fmt(sun[0][1])}</b></div></div></div>
  <div class="card"><div class="big">⏰ השעות הכי טובות</div><div class="chips">${best.map(b=>`<span class="${cls(b.score)}">${day(b.t)} ${fmt(b.t)} · ${b.score}</span>`).join("")}</div></div>
  <div class="card"><div class="big">👤 לפי רמת דייג</div><div class="chips">${levels(h).map(([n,o])=>`<span class="${o?"g":"r"}">${o?"✔":"✘"} ${n}</span>`).join("")}</div></div>
- <div class="card"><div class="big">🎣 ציוד מומלץ</div>🪝 חכה: ${g[0]}<br>🦐 פיתיון: ${g[1]}${g[3]?"<br>"+g[3]:""}<div class="big" style="margin-top:12px">🐟 דגים צפויים</div><div class="fish">${g[2].map(fishImg).join("")}</div></div>
- <div class="card"><div class="big">📅 48 שעות קדימה ‹ החליקו</div><div class="hrs">${win.filter((_,i)=>i%2==0).map(x=>`<div class="hr">${day(x.t)}<br>${fmt(x.t)}<b class="${cls(x.score)}">${x.score}</b>🌊${x.wave!=null?x.wave.toFixed(1):"-"}<br>💨${Math.round(x.ws)}</div>`).join("")}</div></div>`;D.scrollIntoView({behavior:'smooth'})}
+ <div class="card"><div class="big">🎣 ציוד מומלץ ודגים לפי סוג חכה</div>${g.n?g.n+"<br>":""}${g.o.map((o,i)=>`<div style="margin:12px 0;padding-top:8px;border-top:1px solid #fff2"><b>${i==0?"⭐ הכי מתאים עכשיו: ":""}${o.r}</b><br>🦐 פיתיון: ${o.b}<div class="fish" style="margin-top:8px">${o.f.map(fishImg).join("")}</div></div>`).join("")}</div>`;D.scrollIntoView({behavior:'smooth'})}
 function geo(){navigator.geolocation.getCurrentPosition(p=>{const{latitude:a,longitude:b}=p.coords;const s=[...SPOTS].sort((x,y)=>Math.hypot(x.la-a,x.lo-b)-Math.hypot(y.la-a,y.lo-b))[0];detail({...s,n:s.n+" (הכי קרוב אליך)"})},()=>alert("אין גישה למיקום"))}
 rankAll();
 </script></body></html>
